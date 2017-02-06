@@ -79,8 +79,12 @@ int main() {
 		// Loop through each memory bytes and increment by phase_value
 		for (memory = 1; memory <= max_memory; memory = memory + phase_value) {
 
-			// Write memory data to files
-			myfile.write (memory_array, phase_value);
+			for (count = 1; count <= file_count; count++) {
+
+				// Write memory data to files
+				myfile.write (memory_array, phase_value);
+
+			}
 
 		}
 
