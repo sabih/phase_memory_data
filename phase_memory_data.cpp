@@ -1,11 +1,19 @@
 /*
- * Allocate a memory of 256 kB = 2^18.
- * Save ASCII values of characters in memory.
- * Each character occupies 1 byte.
- * Phase 0: Save 1 byte = (2^0) of data at a time in first file.
- * Phase 1: Save 2 bytes = (2^1) of data at a time in second file.
- * ...
- * Phase 18: Save 2^18 bytes i.e., whole memory data at once in eighteenth file.
+ * 1. Create 18 files.
+ *
+ * 2. Allocate memory of size 256 kB = 2^18 and fill the memory with ASCII codes of characters.
+ *
+ * 3. Write memory data to each of the 18 files as per the following criteria:
+ *    Phase 0 (2^0):
+ *         Write first byte of data from memory to each of the 18 files.
+ *         Write second byte of data from memory to each of the 18 files and so on till all the memory data is written.
+ *    Phase 1 (2^1):
+ *         Write first 2 bytes of data from memory to each of the 18 files.
+ *         Write next 2 bytes of data from memory to each of the 18 files and so on till all the memory data is written.
+ *    Phase 18 (2^18):
+ *         Write 256 kB i.e., whole data at once in all the 18 files.
+ *
+ * 4. Find the time taken for each phase and plot in graph.
  */
 
 #include <iostream>
@@ -68,30 +76,35 @@ int main() {
 		// phase = 1, 2, 4, 8, ... (No. of bytes of memory to be written in files at a time)
 		phase_value = pow(2, phase);
 
-		file_name = file_array[phase];
-
-		// Open file in append mode
-		myfile.open(file_name, std::ios_base::app);
-
 		// Set the clock
 		std::clock_t c_start = std::clock();
 
 		// Loop through each memory bytes and increment by phase_value
 		for (memory = 1; memory <= max_memory; memory = memory + phase_value) {
 
-			// for (count = 1; count <= file_count; count++) {
+			// This loop will open all 18 files one by one and write data as per phase_value
+			// If phase_value = 1, then 1 byte of data will be written in all the files
+			// Once 1 byte of data is written in all files it will move to parent loop increment memory value by 1,
+			// check if memory <=  max_memory, then again continue to write next byte of data in all files
+			for (count = 0; count < file_count; count++) {
+
+				file_name = file_array[count];
+
+				// Open file in append mode
+				myfile.open(file_name, std::ios_base::app);
 
 				// Write memory data to files
 				myfile.write (memory_array, phase_value);
 
-			// }
+				// Close the file
+				myfile.close();
+
+			}
 
 		}
 
 		// Set the clock at the end of each phase
 		std::clock_t c_end = std::clock();
-
-		myfile.close();
 
 		// Time taken for each phase in microsecond
 		time = (c_end - c_start) / (CLOCKS_PER_SEC / 1000000);
